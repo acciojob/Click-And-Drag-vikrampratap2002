@@ -42,10 +42,12 @@ let startX;
 let scrollLeft;
 
 slider.addEventListener('mousedown', (e) => {
+  if (e.which !== 1) return;
+
   isDown = true;
   slider.classList.add('active');
 
-  startX = e.pageX; // 🔥 FIX: no offsetLeft
+  startX = e.pageX;
   scrollLeft = slider.scrollLeft;
 });
 
@@ -60,12 +62,11 @@ slider.addEventListener('mouseleave', () => {
 });
 
 slider.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
+  if (!isDown || e.buttons !== 1) return;
 
   e.preventDefault();
 
-  const walk = (e.pageX - startX) * 2; // 🔥 direct calculation
-
+  const walk = (e.pageX - startX) * 2;
   slider.scrollLeft = scrollLeft - walk;
 });
 </script>

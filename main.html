@@ -35,8 +35,6 @@
   </div>
 
 <script>
-//Your code goes here 
-	// Your code here.
 const slider = document.querySelector('.items');
 
 let isDown = false;
@@ -61,13 +59,14 @@ slider.addEventListener('mouseup', () => {
   slider.classList.remove('active');
 });
 
+// 🔥 FIX: mousemove should be on slider (NOT document)
 slider.addEventListener('mousemove', (e) => {
   if (!isDown) return;
 
   e.preventDefault();
 
   const x = e.pageX - slider.offsetLeft;
-  const walk = (x - startX) * 2; // speed control
+  const walk = (x - startX) * 2;
 
   slider.scrollLeft = scrollLeft - walk;
 });

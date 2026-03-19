@@ -1,75 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Click and Drag</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Draggable Cubes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+      min-height: 100vh;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    p.hint {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    #arena {
+      position: relative;
+      width: 600px;
+      height: 480px;
+      background: #ffffff;
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .cube {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: grab;
+      transition: transform 0.1s;
+    }
+
+    .cube:hover {
+      border-color: rgba(0,0,0,0.3);
+    }
+
+    .cube.dragging {
+      cursor: grabbing;
+      z-index: 100;
+      transform: scale(1.08);
+    }
+  </style>
 </head>
 <body>
-  <div class="items">
-    <div class="item item1">01</div>
-    <div class="item item2">02</div>
-    <div class="item item3">03</div>
-    <div class="item item4">04</div>
-    <div class="item item5">05</div>
-    <div class="item item6">06</div>
-    <div class="item item7">07</div>
-    <div class="item item8">08</div>
-    <div class="item item9">09</div>
-    <div class="item item10">10</div>
-    <div class="item item11">11</div>
-    <div class="item item12">12</div>
-    <div class="item item13">13</div>
-    <div class="item item14">14</div>
-    <div class="item item15">15</div>
-    <div class="item item16">16</div>
-    <div class="item item17">17</div>
-    <div class="item item18">18</div>
-    <div class="item item19">19</div>
-    <div class="item item20">20</div>
-    <div class="item item21">21</div>
-    <div class="item item22">22</div>
-    <div class="item item23">23</div>
-    <div class="item item24">24</div>
-    <div class="item item25">25</div>
-  </div>
 
-<script>
-const slider = document.querySelector('.items');
+  <h2>Draggable Cubes</h2>
+  <p class="hint">Cubes ko click karke drag karein — area ke andar rehenge</p>
 
-let isDown = false;
-let startX;
-let scrollLeft;
+  <div id="arena"></div>
 
-slider.addEventListener('mousedown', (e) => {
-  if (e.which !== 1) return;
+  <script>
+    const arena = document.getElementById('arena');
 
-  isDown = true;
-  slider.classList.add('active');
+    const CUBE_SIZE = 72;
+    const GAP = 20;
+    const COLS = 5;
+    const ROWS = 2;
+    const TOTAL = COLS * ROWS;
 
-  startX = e.pageX;
-  scrollLeft = slider.scrollLeft;
-});
+    // Color pairs: [background, text]
+    const COLORS = [
+      ['#E6F1FB', '#185FA5'],
+      ['#E1F5EE', '#0F6E56'],
+      ['#FAEEDA', '#854F0B'],
+      ['#FAECE7', '#993C1D'],
+      ['#FBEAF0', '#993556'],
+      ['#EEEDFE', '#534AB7'],
+      ['#EAF3DE', '#3B6D11'],
+      ['#FCEBEB', '#A32D2D'],
+      ['#E1F5EE', '#1D9E75'],
+      ['#E6F1FB', '#0C447C']
+    ];
 
-slider.addEventListener('mouseup', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
+    const cubes = [];
 
-slider.addEventListener('mouseleave', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
+    // Create cubes in grid
+    for (let i = 0; i < TOTAL; i++) {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
+      const x = GAP + col * (CUBE_SIZE + GAP);
+      const y = GAP + row * (CUBE_SIZE + GAP);
 
-slider.addEventListener('mousemove', (e) => {
-  if (!isDown || e.buttons !== 1) return;
+      const el = document.createElement('div');
+      el.className = 'cube';
+      el.style.left = x + 'px';
+      el.style.top  = y + 'px';
+      el.style.background   = COLORS[i][0];
+      el.style.color        = COLORS[i][1];
+      el.style.borderColor  = COLORS[i][1] + '55';
+      el.textContent = i + 1;
 
-  e.preventDefault();
+      arena.appendChild(el);
+      cubes.push(el);
+    }
 
-  const walk = (e.pageX - startX) * 2;
-  slider.scrollLeft = scrollLeft - walk;
-});
-</script>
+    // Drag state
+    let dragging = null;
+    let offX = 0, offY = 0;
 
-  </body>
+    // Mouse Events
+    cubes.forEach(cube => {
+      cube.addEventListener('mousedown', e => {
+        e.preventDefault();
+        dragging = cube;
+        const rect = cube.getBoundingClientRect();
+        offX = e.clientX - rect.left;
+        offY = e.clientY - rect.top;
+        cube.classList.add('dragging');
+      });
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const arenaRect = arena.getBoundingClientRect();
+      let x = e.clientX - arenaRect.left - offX;
+      let y = e.clientY - arenaRect.top  - offY;
+
+      // Boundary constraints
+      x = Math.max(0, Math.min(arenaRect.width  - CUBE_SIZE, x));
+      y = Math.max(0, Math.min(arenaRect.height - CUBE_SIZE, y));
+
+      dragging.style.left = x + 'px';
+      dragging.style.top  = y + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (dragging) {
+        dragging.classList.remove('dragging');
+        dragging = null;
+      }
+    });
+
+    // Touch Events (mobile support)
+    cubes.forEach(cube => {
+      cube.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const t = e.touches[0];
+        dragging = cube;
+        const rect = cube.getBoundingClientRect();
+        offX = t.clientX - rect.left;
+        offY = t.clientY - rect.top;
+        cube.classList.add('dragging');
+      }, { passive: false });
+    });
+
+    document.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      const arenaRect = arena.getBoundingClientRect();
+      let x = t.clientX - arenaRect.left - offX;
+      let y = t.clientY - arenaRect.top  - offY;
+
+      x = Math.max(0, Math.min(arenaRect.width  - CUBE_SIZE, x));
+      y = Math.max(0, Math.min(arenaRect.height - CUBE_SIZE, y));
+
+      dragging.style.left = x + 'px';
+      dragging.style.top  = y + 'px';
+    }, { passive: false });
+
+    document.addEventListener('touchend', () => {
+      if (dragging) {
+        dragging.classList.remove('dragging');
+        dragging = null;
+      }
+    });
+  </script>
+
+</body>
 </html>

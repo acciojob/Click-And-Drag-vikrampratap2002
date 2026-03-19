@@ -189,6 +189,15 @@
         dragging = null;
       }
     });
+
+	  cy.get('.items')                         // ✅ ab milega
+  .trigger('mousedown', { pageX: 493 })
+  .trigger('mousemove', { pageX: 271 }) // left drag → scrollLeft badhega
+  .trigger('mouseup', { force: true })
+
+cy.get('.items').should($items => {
+  expect($items[0].scrollLeft).to.greaterThan(0); // ✅ scroll hua
+});
   </script>
 
 </body>

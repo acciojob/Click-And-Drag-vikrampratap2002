@@ -1,5 +1,5 @@
 const cubes = document.querySelectorAll(".cube");
-const container = document.querySelector(".container");
+const container = document.querySelector(".items");
 
 let activeCube = null;
 let offsetX = 0;
@@ -9,13 +9,12 @@ cubes.forEach(cube => {
   cube.addEventListener("mousedown", (e) => {
     activeCube = cube;
 
-    // Get mouse offset inside cube
     const rect = cube.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
 
     cube.style.position = "absolute";
-    cube.style.zIndex = 1000;
+    cube.style.zIndex = "1000";
     cube.style.cursor = "grabbing";
   });
 });
@@ -28,7 +27,7 @@ document.addEventListener("mousemove", (e) => {
   let x = e.clientX - containerRect.left - offsetX;
   let y = e.clientY - containerRect.top - offsetY;
 
-  // Boundary constraints
+  // Boundary control
   x = Math.max(0, Math.min(x, container.clientWidth - activeCube.offsetWidth));
   y = Math.max(0, Math.min(y, container.clientHeight - activeCube.offsetHeight));
 

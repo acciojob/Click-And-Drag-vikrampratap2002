@@ -41,3 +41,24 @@ document.addEventListener("mouseup", () => {
   }
   activeCube = null;
 });
+
+describe("Drag Test", () => {
+
+  beforeEach(() => {
+    cy.visit("http://localhost:3000");
+  });
+
+  it("should drag cube", () => {
+
+    cy.get('.items').should('be.visible');
+
+    cy.get('.cube').first()
+      .trigger('mousedown', { which: 1, clientX: 100, clientY: 100 })
+      .trigger('mousemove', { clientX: 250, clientY: 250 })
+      .trigger('mouseup');
+
+    cy.get('.cube').first()
+      .should('have.css', 'position', 'absolute');
+  });
+
+});

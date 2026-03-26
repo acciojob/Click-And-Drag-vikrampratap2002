@@ -8,7 +8,7 @@ body {
 
 .items {
   width: 400px;
-  height: 400px;
+  height: 400px;   /* 🔥 THIS IS MUST */
   border: 2px solid black;
   position: relative;
   display: grid;
@@ -16,7 +16,6 @@ body {
   gap: 10px;
   padding: 10px;
   background: white;
-  overflow: hidden;
 }
 
 .cube {

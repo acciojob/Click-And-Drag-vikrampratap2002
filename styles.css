@@ -1,27 +1,54 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #f0f0f0;
+  min-height: 100vh;
+  background: #f5f5f5;
+  font-family: sans-serif;
 }
 
-.items {
-  width: 400px;
-  height: 400px;   /* 🔥 THIS IS MUST */
-  border: 2px solid black;
+.container {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  padding: 10px;
-  background: white;
+  width: 600px;
+  height: 450px;
+  background: #ffffff;
+  border: 2px solid #cccccc;
+  border-radius: 12px;
+  overflow: hidden;
+  user-select: none;
 }
 
 .cube {
-  width: 80px;
-  height: 80px;
-  background: teal;
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  background: #4f46e5;
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
   cursor: grab;
-  position: relative;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.cube:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.cube.dragging {
+  cursor: grabbing;
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 1000;
+  transition: none;
 }

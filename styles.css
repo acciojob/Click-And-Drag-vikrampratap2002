@@ -6,15 +6,21 @@ body {
   background: #f5f5f5;
 }
 
-.container {
+.items {
   width: 400px;
   height: 400px;
   border: 2px solid #333;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  padding: 10px;
   position: relative;
+  overflow: auto; /* IMPORTANT for scroll test */
+}
+.items {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.cube {
+  display: inline-block;
+  margin-right: 10px;
 }
 
 .cube {

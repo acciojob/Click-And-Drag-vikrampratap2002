@@ -1,43 +1,33 @@
-const cubes = document.querySelectorAll('.cube');
-const container = document.querySelector('.items');
+const items = document.querySelector('.items');
 
-let currentCube = null;
-let offsetX = 0;
-let offsetY = 0;
+let isDown = false;
+let startX;
+let scrollLeft;
 
-cubes.forEach((cube, index) => {
-  // Set initial grid positions manually
-  cube.style.left = (index % 2) * 100 + "px";
-  cube.style.top = Math.floor(index / 2) * 100 + "px";
-
-  cube.addEventListener('mousedown', (e) => {
-    currentCube = cube;
-
-    offsetX = e.clientX - cube.offsetLeft;
-    offsetY = e.clientY - cube.offsetTop;
-  });
+items.addEventListener('mousedown', (e) => {
+  isDown = true;
+  items.style.cursor = 'grabbing';
+  
+  startX = e.pageX - items.offsetLeft;
+  scrollLeft = items.scrollLeft;
 });
 
-document.addEventListener('mousemove', (e) => {
-  if (!currentCube) return;
+items.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
 
-  let x = e.clientX - offsetX;
-  let y = e.clientY - offsetY;
+  const x = e.pageX - items.offsetLeft;
+  const walk = (x - startX) * 2;
 
-  // Boundary constraints
-  const containerRect = container.getBoundingClientRect();
-  const cubeRect = currentCube.getBoundingClientRect();
-
-  const maxX = container.clientWidth - cubeRect.width;
-  const maxY = container.clientHeight - cubeRect.height;
-
-  x = Math.max(0, Math.min(x, maxX));
-  y = Math.max(0, Math.min(y, maxY));
-
-  currentCube.style.left = x + "px";
-  currentCube.style.top = y + "px";
+  items.scrollLeft = scrollLeft - walk;
 });
 
-document.addEventListener('mouseup', () => {
-  currentCube = null;
+items.addEventListener('mouseup', () => {
+  isDown = false;
+  items.style.cursor = 'grab';
+});
+
+items.addEventListener('mouseleave', () => {
+  isDown = false;
+  items.style.cursor = 'grab';
 });
